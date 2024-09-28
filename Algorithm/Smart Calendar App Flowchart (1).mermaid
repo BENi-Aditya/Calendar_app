@@ -1,0 +1,50 @@
+graph TD
+    A[Start] --> B[Initialize User Data]
+    B --> C[User Input: Tasks and Activities]
+    C --> D[Input Task/Activity Info]
+    D --> E[Select User Preferences]
+    E --> F[Break Down Large Tasks]
+    F --> G[Fetch Time Estimates]
+    G --> H[Check Calendar for Available Slots]
+    H --> I[Sort Tasks by Priority]
+    I --> J[AI-Based Time Allocation]
+    J --> K[Schedule Tasks Into Calendar]
+    K --> L{Any Scheduling Conflicts?}
+    L -->|Yes| M[Handle Conflicts]
+    M --> K
+    L -->|No| N[Generate Calendar Events]
+    N --> O[Provide Feedback & Adjustments]
+    O --> P[Generate ICS File]
+    P --> Q[Final Calendar Sync]
+    Q --> R[Continuous Monitoring & Updates]
+    R --> S[End]
+
+    subgraph "Optional Features"
+    T[Manual Input of Specific Times]
+    U[Real-Time Adjustments]
+    V[Task Completion Tracking]
+    end
+
+    T -.-> K
+    U -.-> R
+    V -.-> R
+
+    subgraph "AI Time Allocation"
+    W[Calculate Optimal Time]
+    X[Adjust for User Preferences]
+    Y[Consider Historical Data]
+    end
+
+    W --> J
+    X --> J
+    Y --> J
+
+    subgraph "Conflict Resolution"
+    Z[Suggest Alternative Slots]
+    AA[Adjust Lower Priority Tasks]
+    AB[Prompt User for Manual Adjustments]
+    end
+
+    Z --> M
+    AA --> M
+    AB --> M
