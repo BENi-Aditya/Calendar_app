@@ -1,6 +1,6 @@
 <!-- README.md -->
 
-<h1 align="center" style="color: #4CAF50;">Calendar App</h1>
+<h1 align="center" style="color: #4CAF50;">Smart Calendar App</h1>
 
 <p align="center" style="font-size: 1.2em;">Ever feel like adding events to your calendar is just another chore? Whether it's scheduling lectures, study sessions, or practice, it can be a headache trying to fit everything in without conflicts.
 
