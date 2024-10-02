@@ -1,18 +1,14 @@
-# Added preferred start date functionality for multi-day events:
-# 1. Introduced `get_start_date()` to handle user input for the start date with validation.
-# 2. Updated OpenAI instructions to check for multi-day tasks and use relative day numbers.
-# 3. Enhanced parsing logic to calculate dates based on the provided start date for multi-day tasks.
-# 4. The main flow now only asks for the start date when necessary, improving scheduling flexibility.
-
-
-
-
 import os
 import openai
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from ics import Calendar, Event
 from colorama import Fore, Style, init
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
+import pickle
 
 # Initialize colorama
 init()
@@ -20,6 +16,9 @@ init()
 # Load environment variables
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
+
+# If modifying these SCOPES, delete the file token.pickle.
+SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 # Terminal styling
 class TerminalStyle:
@@ -48,32 +47,8 @@ def get_start_date():
 
 # Updated Instructions for OpenAI
 INSTRUCTIONS = """Analyze the given task and create an intelligent scheduling plan following these guidelines:
-
-1. For study topics:
-   - Analyze the complexity and scope of the topic
-   - Estimate total hours needed based on typical study patterns
-   - Break down into appropriate session lengths (not limited to 2 hours)
-   - Consider topic difficulty when suggesting time slots
-   - For multi-day schedules, use relative day numbers (Day 1, Day 2, etc.)
-
-2. For regular tasks:
-   - Estimate appropriate duration based on task nature
-   - Schedule during suitable hours (e.g., chores in morning/afternoon)
-
-3. Include in your response:
-First: Whether this is a multi-day task (Yes/No)
-Then format the rest as follows:
-
-Task Analysis:
-[Brief analysis of task complexity and time requirements]
-
-Scheduling Plan:
-[Task Name]: [Duration] hours
-Day: [Day Number]
-Time: [HH:MM] - [HH:MM]
-Topic/Activity: [Specific subtopic or activity focus for this session]
-
-[Repeat for additional days if needed]"""
+...
+"""
 
 def get_task_schedule(task):
     """Get intelligent time suggestions from OpenAI for the task."""
@@ -184,6 +159,42 @@ def create_ics_file(events, filename="my_schedule.ics"):
     else:
         print(f"\n{TerminalStyle.WARNING}❌ Error: Failed to create schedule file{TerminalStyle.RESET}\n")
 
+def add_events_to_google_calendar(events):
+    """Add the scheduled events to the user's Google Calendar."""
+    creds = None
+    # The file token.pickle stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first time.
+    if os.path.exists('token.pickle'):
+        with open('token.pickle', 'rb') as token:
+            creds = pickle.load(token)
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+        # Save the credentials for the next run
+        with open('token.pickle', 'wb') as token:
+            pickle.dump(creds, token)
+
+    service = build('calendar', 'v3', credentials=creds)
+
+    for event_data in events:
+        event = {
+            'summary': event_data['name'],
+            'start': {
+                'dateTime': event_data['start'].isoformat(),
+                'timeZone': 'UTC',
+            },
+            'end': {
+                'dateTime': event_data['end'].isoformat(),
+                'timeZone': 'UTC',
+            },
+        }
+        event = service.events().insert(calendarId='primary', body=event).execute()
+        print(f"Event created: {event.get('htmlLink')}")
+
 def main():
     print(f"\n{TerminalStyle.HEADER}🗓️  Smart Calendar Management App{TerminalStyle.RESET}")
     print(f"{TerminalStyle.INFO}Let's create your intelligent schedule!{TerminalStyle.RESET}\n")
@@ -206,17 +217,26 @@ def main():
             # Get start date if it's a multi-day task
             start_date = get_start_date() if is_multi_day else datetime.now().date()
             
-            # Parse and store events
+            # Parse schedule
             events = parse_schedule(schedule, start_date)
-            all_events.extend(events)
-        
-        print(f"\n{TerminalStyle.PROMPT}Any other task? (N/n to finish):{TerminalStyle.RESET}")
-        more = input().strip().lower()
-        if more in ['n', 'no']:
+            
+            if events:
+                all_events.extend(events)
+            
+        print(f"\n{TerminalStyle.PROMPT}Do you want to add another task? (y/n):{TerminalStyle.RESET}")
+        if input().strip().lower() != 'y':
             break
     
     if all_events:
-        create_ics_file(all_events)
+        print(f"\n{TerminalStyle.PROMPT}Choose your saving method: (1) ICS file (2) Google Calendar{TerminalStyle.RESET}")
+        choice = input().strip()
+        
+        if choice == '1':
+            create_ics_file(all_events)
+        elif choice == '2':
+            add_events_to_google_calendar(all_events)
+        else:
+            print(f"{TerminalStyle.WARNING}Invalid choice! Please select a valid option.{TerminalStyle.RESET}")
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
