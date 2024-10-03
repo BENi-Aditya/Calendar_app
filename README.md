@@ -1,7 +1,13 @@
 <!-- README.md -->
 
-<h1 align="center" style="color: #4CAF50;">Smart Calendar App</h1>
-
+<h1 align="center" style="color: #4CAF50;">MayDay - Smart Calendar App</h1>
+</p>
+</p>
+<div align="center">
+    <img src="App Logos/MayDay GC logo.png" alt="Smart Calendar Logo" style="width: 200px; border-radius: 1000px;">
+</div>
+</p>
+</p>
 <p align="center" style="font-size: 1.2em;">Ever feel like adding events to your calendar is just another chore? Whether it's scheduling lectures, study sessions, or practice, it can be a headache trying to fit everything in without conflicts.
 
 The **Smart Calendar App** fixes that. It automates the process, adding events and intelligently allocating time based on your schedule. No more juggling or guessing—just let the app handle it. It’s like having a personal assistant for your day!</p>
