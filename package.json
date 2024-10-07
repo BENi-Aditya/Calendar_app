@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "react-router-dom": "^6.26.2",
     "uuid": "^10.0.0"
   }
 }
