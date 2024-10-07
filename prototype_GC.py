@@ -1,3 +1,4 @@
+# Now it works with Google Calendar too !!!
 import os
 from urllib.request import Request
 import openai

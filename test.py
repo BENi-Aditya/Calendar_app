@@ -1,8 +1,6 @@
 from datetime import datetime
 from ics import Calendar, Event
-import openai
 
-print(dir(openai))
 c = Calendar()
 e = Event()
 
