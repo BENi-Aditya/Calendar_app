@@ -1,0 +1,39 @@
+# Recreate the text file with instructions to run the iOS app after environment reset
+ios_instructions = """
+Instructions to Run the MayDay_app iOS App
+
+1. Open Terminal.
+
+2. Navigate to the Project's Root Directory:
+   cd '/Users/tripathd/Downloads/Manual Library/Projects/Calender_app/MayDay_app'
+
+3. Navigate to the iOS Directory:
+   cd ios
+
+4. Install CocoaPods (only if you haven't done this already):
+   pod install
+
+5. Navigate Back to the Project Root:
+   cd ..
+
+6. Run the iOS App:
+   npx react-native run-ios
+
+7. Optional: Open in Xcode:
+   - If you prefer, you can open the project in Xcode:
+   open ios/MayDay_app.xcworkspace
+   - Then hit the Run button in Xcode to start the app.
+"""
+
+# Save the instructions to a .txt file
+file_path = '/mnt/data/ios_instructions.txt'
+with open(file_path, 'w') as file:
+    file.write(ios_instructions)
+
+file_path
+
+
+
+
+/Users/tripathd/Downloads/Manual Library/Projects/Calender_app/MayDay_app/ios/MayDay_app
+npx react-native run-android
