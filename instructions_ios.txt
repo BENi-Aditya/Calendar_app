@@ -37,3 +37,7 @@ file_path
 
 /Users/tripathd/Downloads/Manual Library/Projects/Calender_app/MayDay_app/ios/MayDay_app
 npx react-native run-android
+emulator -avd "MayDay"
+emulator -avd "MayDay" -read-only
+emulator -avd "MayDay" -log-nofilter
+
