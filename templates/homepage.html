@@ -1,0 +1,43 @@
+:::::::::: container
+<div>
+    <h1>Mayday</h1>
+</div>
+
+<div class="calendar-container">
+    <div class="calendar-nav">
+        <span>﹤</span>
+        <span id="currentMonth">{{ current_month }}</span>
+        <span>﹥</span>
+    </div>
+    <!-- Add your calendar widget here -->
+</div>
+
+<div id="eventsList" class="events-list">
+    {% for event in events %}
+        <div class="event">
+            <span>{{ event.name }}</span>
+            <span>{{ event.date }}</span>
+            <span>{{ event.time }}</span>
+        </div>
+    {% else %}
+        <p>No events scheduled.</p>
+    {% endfor %}
+</div>
+
+<a href="{{ url_for('add_event') }}" class="add-event-button">+</a>
+
+<nav>
+    <a href="{{ url_for('homepage') }}" class="active" onclick="showHome()">
+        <span class="icon">🏠</span>
+        Home
+    </a>
+    <a href="#" onclick="goToCalendar()">
+        <span class="icon">📅</span>
+        Calendar
+    </a>
+    <a href="#">
+        <span class="icon">⚙️</span>
+        Settings
+    </a>
+</nav>
+::::::::::

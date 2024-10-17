@@ -1,0 +1,40 @@
+:::::::::::container
+<div>
+    <h1>Mayday</h1>
+    <h2>Create New Event (Manual)</h2>
+</div>
+
+<form action="{{ url_for('manual_schedule') }}" method="post">
+    <div class="form-group">
+        <label for="event_description">Event Description</label>
+        <input type="text" id="event_description" name="event_description" required>
+    </div>
+
+    <div class="form-group">
+        <label for="event_date">Date</label>
+        <input type="date" id="event_date" name="event_date" required>
+    </div>
+
+    <div class="form-group">
+        <label for="event_time">Time</label>
+        <input type="time" id="event_time" name="event_time" required>
+    </div>
+
+    <button type="submit">Save</button>
+</form>
+
+<nav>
+    <a href="{{ url_for('homepage') }}">
+        <span class="icon">🏠</span>
+        Home
+    </a>
+    <a href="#" class="active">
+        <span class="icon">📅</span>
+        Calendar
+    </a>
+    <a href="#">
+        <span class="icon">⚙️</span>
+        Settings
+    </a>
+</nav>
+:::::::::::

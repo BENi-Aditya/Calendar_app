@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mayday - Add Event</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        body {
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 390px;
+            margin: 0 auto;
+            background-color: white;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+        header {
+            margin-bottom: 30px;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .scheduling-options {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .option-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .ai-btn {
+            background-color: #4285f4;
+        }
+        .manual-btn {
+            background-color: #fbbc05;
+        }
+        .option-description {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            background-color: white;
+            border-top: 1px solid #eee;
+        }
+        .bottom-nav a {
+            text-decoration: none;
+            color: #888;
+            font-size: 12px;
+            text-align: center;
+        }
+        .bottom-nav .active {
+            color: #4285f4;
+        }
+        .icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Mayday</h1>
+            <h2>Create New Event</h2>
+        </header>
+        
+        <div class="scheduling-options">
+            <div>
+                <button class="option-btn ai-btn" onclick="location.href='/ai-schedule'">AI Schedule Assistant</button>
+                <p class="option-description">Let our AI suggest the best time for your event based on your calendar and preferences.</p>
+            </div>
+            <div>
+                <button class="option-btn manual-btn" onclick="location.href='/manual-schedule'">Add Event Manually</button>
+                <p class="option-description">Choose your own date, time, and details for the event.</p>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <a href="/">
+                <div class="icon">🏠</div>
+                Home
+            </a>
+            <a href="#" class="active">
+                <div class="icon">📅</div>
+                Calendar
+            </a>
+            <a href="#">
+                <div class="icon">⚙️</div>
+                Settings
+            </a>
+        </nav>
+    </div>
+</body>
+</html>

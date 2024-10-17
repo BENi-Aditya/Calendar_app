@@ -1,0 +1,25 @@
+:::::::: container
+<div>
+    <h1>Add Event</h1>
+</div>
+
+<div class="scheduling-options">
+    <a href="{{ url_for('ai_schedule') }}">Add Event via AI</a>
+    <a href="{{ url_for('manual_schedule') }}">Add Event Manually</a>
+</div>
+
+<nav>
+    <a href="{{ url_for('homepage') }}">
+        <span class="icon">🏠</span>
+        Home
+    </a>
+    <a href="{{ url_for('add_event') }}" class="active">
+        <span class="icon">📅</span>
+        Calendar
+    </a>
+    <a href="#">
+        <span class="icon">⚙️</span>
+        Settings
+    </a>
+</nav>
+::::::::

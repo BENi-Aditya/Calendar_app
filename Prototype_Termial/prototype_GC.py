@@ -19,7 +19,7 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Google Calendar API settings
-SCOPES = ['https://www.googleapis.com/auth/calendar']
+SCOPES = ['https://www.googleapis.com/auth /calendar']
 
 class TerminalStyle:
     HEADER = Fore.MAGENTA + Style.BRIGHT
