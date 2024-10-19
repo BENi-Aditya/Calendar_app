@@ -1,25 +1,170 @@
-:::::::: container
-<div>
-    <h1>Add Event</h1>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create a new event using Mayday's AI scheduling assistant or add an event manually.">
+    <title>Mayday - Add Event</title>
+    <style>
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #fbbc05;
+            --text-color: #333;
+            --background-color: #f5f5f5;
+        }
 
-<div class="scheduling-options">
-    <a href="{{ url_for('ai_schedule') }}">Add Event via AI</a>
-    <a href="{{ url_for('manual_schedule') }}">Add Event Manually</a>
-</div>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
 
-<nav>
-    <a href="{{ url_for('homepage') }}">
-        <span class="icon">🏠</span>
-        Home
-    </a>
-    <a href="{{ url_for('add_event') }}" class="active">
-        <span class="icon">📅</span>
-        Calendar
-    </a>
-    <a href="#">
-        <span class="icon">⚙️</span>
-        Settings
-    </a>
-</nav>
-::::::::
+        body {
+            background-color: var(--background-color);
+        }
+
+        .container {
+            max-width: 390px;
+            margin: 0 auto;
+            background-color: white;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        header {
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 20px;
+        }
+
+        .scheduling-options {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .option-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+            text-align: center;
+            text-decoration: none; /* Prevent underline for links */
+        }
+
+        .ai-btn {
+            background-color: var(--primary-color);
+        }
+
+        .manual-btn {
+            background-color: var(--secondary-color);
+        }
+
+        .option-description {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            background-color: white;
+            border-top: 1px solid #eee;
+        }
+
+        .bottom-nav a {
+            text-decoration: none;
+            color: #888;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .bottom-nav .active {
+            color: var(--primary-color);
+        }
+
+        .icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .option-btn:hover {
+            opacity: 0.8;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1, h2 {
+                font-size: 20px;
+            }
+
+            .option-btn {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Mayday</h1>
+            <h2>Create New Event</h2>
+        </header>
+
+        <main>
+            <div class="scheduling-options">
+                <div>
+                    <a href="/ai-schedule" class="option-btn ai-btn" aria-label="AI Schedule Assistant">AI Schedule Assistant</a>
+                    <p class="option-description">Let our AI suggest the best time for your event based on your calendar and preferences.</p>
+                </div>
+                <div>
+                    <a href="/manual-schedule" class="option-btn manual-btn" aria-label="Add Event Manually">Add Event Manually</a>
+                    <p class="option-description">Choose your own date, time, and details for the event.</p>
+                </div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="/">
+                <div class="icon">🏠</div>
+                Home
+            </a>
+            <a href="#" class="active">
+                <div class="icon">📅</div>
+                Calendar
+            </a>
+            <a href="#">
+                <div class="icon">⚙️</div>
+                Settings
+            </a>
+        </nav>
+    </div>
+</body>
+</html>
