@@ -8,6 +8,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from dateutil import parser
 
 # Load environment variables
 load_dotenv()
@@ -120,7 +121,11 @@ def create_ics_file(event):
     cal = Calendar()
     ics_event = Event()
     ics_event.name = event['name']
-    event_datetime = datetime.strptime(f"{event['date']} {event['time']}", '%Y-%m-%d %H:%M')
+    
+    # Parse the date and time strings
+    datetime_str = f"{event['date']} {event['time']}"
+    event_datetime = parser.parse(datetime_str)
+    
     ics_event.begin = event_datetime
     ics_event.end = event_datetime + timedelta(hours=1)  # Assume 1-hour duration
     cal.events.add(ics_event)
@@ -150,7 +155,9 @@ def add_to_google_calendar(event):
         creds = get_google_calendar_credentials()
         service = build('calendar', 'v3', credentials=creds)
         
-        event_datetime = datetime.strptime(f"{event['date']} {event['time']}", '%Y-%m-%d %H:%M')
+        # Parse the date and time strings
+        datetime_str = f"{event['date']} {event['time']}"
+        event_datetime = parser.parse(datetime_str)
         end_datetime = event_datetime + timedelta(hours=1)  # Assume 1-hour duration
         
         calendar_event = {
