@@ -1,12 +1,11 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash, session
-from flask_session import Session
-from datetime import datetime, timedelta
-import openai
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 from dotenv import load_dotenv
+import openai
+from datetime import datetime, timedelta
 from ics import Calendar, Event
 from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import Flow
+from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
@@ -14,171 +13,162 @@ from googleapiclient.errors import HttpError
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+# Google Calendar API settings
+SCOPES = ['https://www.googleapis.com/auth/calendar']
+
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
-# Configure session to use filesystem
-app.config['SESSION_TYPE'] = 'filesystem'
-Session(app)
+# Simulated user database (replace with a real database in production)
+users = {
+    "user1": "password1",
+    "user2": "password2"
+}
 
-# Google Calendar API settings
-SCOPES = ['https://www.googleapis.com/auth/calendar']
-flow = Flow.from_client_secrets_file(
-    'credentials.json',
-    scopes=SCOPES)
-flow.redirect_uri = 'http://localhost:5000/oauth2callback'
-
-def get_google_calendar_service():
-    if 'credentials' not in session:
-        return None
-    credentials = Credentials(**session['credentials'])
-    return build('calendar', 'v3', credentials=credentials)
+# Simulated events storage (replace with a real database in production)
+events = []
 
 @app.route('/')
+def home():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('home.html')
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        if username in users and users[username] == password:
+            session['username'] = username
+            return redirect(url_for('home'))
+        return render_template('login.html', error='Invalid username or password')
     return render_template('login.html')
 
-@app.route('/login', methods=['POST'])
-def login_post():
-    username = request.form.get('username')
-    password = request.form.get('password')
-    if username == 'Aditya' and password == '1234':
-        session['user'] = username
-        return redirect(url_for('homepage'))
-    else:
-        flash('Invalid credentials')
-        return redirect(url_for('login'))
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('login'))
 
-@app.route('/homepage')
-def homepage():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    today = datetime.now()
-    events = get_events_for_month(today.year, today.month)
-    return render_template('homepage.html', current_month=today.strftime("%B %Y"), events=events)
-
-@app.route('/add_event')
+@app.route('/add_event', methods=['GET', 'POST'])
 def add_event():
-    if 'user' not in session:
+    if 'username' not in session:
         return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        event_name = request.form['event-name']
+        event_date = request.form.get('event-date')
+        event_time = request.form.get('event-time')
+        
+        if not event_date or not event_time:
+            # AI scheduling
+            ai_suggestion = get_ai_suggestion(event_name)
+            event_date = ai_suggestion['date']
+            event_time = ai_suggestion['time']
+        
+        new_event = {
+            'name': event_name,
+            'date': event_date,
+            'time': event_time
+        }
+        events.append(new_event)
+        
+        # Create ICS file
+        create_ics_file(new_event)
+        
+        # Add to Google Calendar
+        add_to_google_calendar(new_event)
+        
+        return jsonify({'success': True})
+    
     return render_template('add_event.html')
 
-@app.route('/ai_schedule', methods=['GET', 'POST'])
+@app.route('/get_events')
+def get_events():
+    if 'username' not in session:
+        return jsonify([])
+    return jsonify(events)
+
+@app.route('/ai_schedule', methods=['POST'])
 def ai_schedule():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    
-    if request.method == 'POST':
-        event_description = request.form.get('event_description')
-        ai_suggestion = get_ai_suggestion(event_description)
-        
-        if ai_suggestion:  # Check if AI suggestion was received
-            # Split the suggestion into date and time
-            date_time_parts = ai_suggestion.split(' ')
-            event_date = date_time_parts[0]
-            event_time = date_time_parts[1]
-            return render_template('ai_schedule.html', suggestion=ai_suggestion, description=event_description, date=event_date, time=event_time)
-        else:
-            flash("Could not get suggestion from AI. Please try again.")
-            return redirect(url_for('ai_schedule'))
-    
-    return render_template('ai_schedule.html')
+    event_name = request.json['event_name']
+    suggestion = get_ai_suggestion(event_name)
+    return jsonify(suggestion)
 
-@app.route('/save_ai_event', methods=['POST'])
-def save_ai_event():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    
-    event_description = request.form.get('event_description')
-    event_date = request.form.get('event_date')
-    event_time = request.form.get('event_time')
-    
-    create_and_add_event(event_description, event_date, event_time)
-    return redirect(url_for('homepage'))
-
-@app.route('/manual_schedule', methods=['GET', 'POST'])
-def manual_schedule():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    
-    if request.method == 'POST':
-        event_description = request.form.get('event_description')
-        event_date = request.form.get('event_date')
-        event_time = request.form.get('event_time')
-        create_and_add_event(event_description, event_date, event_time)
-        return redirect(url_for('homepage'))
-    
-    return render_template('manual_schedule.html')
-
-@app.route('/authorize')
-def authorize():
-    authorization_url, _ = flow.authorization_url(prompt='consent')
-    return redirect(authorization_url)
-
-@app.route('/oauth2callback')
-def oauth2callback():
-    flow.fetch_token(code=request.args.get('code'))
-    credentials = flow.credentials
-    session['credentials'] = {
-        'token': credentials.token,
-        'refresh_token': credentials.refresh_token,
-        'token_uri': credentials.token_uri,
-        'client_id': credentials.client_id,
-        'client_secret': credentials.client_secret,
-        'scopes': credentials.scopes
-    }
-    return redirect(url_for('homepage'))
-
-def get_ai_suggestion(description):
+def get_ai_suggestion(event_name):
     try:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are an AI assistant that suggests event dates and times. Provide your suggestion in the format 'YYYY-MM-DD HH:MM'."},
-                {"role": "user", "content": f"Suggest a date and time for this event: {description}"}
-            ]
+                {"role": "system", "content": "You are a scheduling assistant. Suggest a date and time for the given event."},
+                {"role": "user", "content": f"Suggest a date and time for: {event_name}"}
+            ],
+            temperature=0.7,
+            max_tokens=50
         )
-        return response.choices[0].message['content'].strip()
+        
+        suggestion = response.choices[0].message.content
+        # Parse the suggestion to extract date and time (you may need to adjust this based on the AI's output format)
+        date, time = suggestion.split(',')
+        return {'date': date.strip(), 'time': time.strip()}
     except Exception as e:
-        print(f"Error in get_ai_suggestion: {str(e)}")
-        return None
+        print(f"Error in AI suggestion: {str(e)}")
+        # Return a default suggestion if AI fails
+        return {'date': datetime.now().strftime('%Y-%m-%d'), 'time': '09:00'}
 
-def create_and_add_event(description, date, time):
-    # Create ICS file
-    calendar = Calendar()
-    event = Event()
-    event.name = description
-    event_datetime = datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M")
-    event.begin = event_datetime
-    event.end = event_datetime + timedelta(hours=1)  # Assume 1-hour duration
-    calendar.events.add(event)
+def create_ics_file(event):
+    cal = Calendar()
+    ics_event = Event()
+    ics_event.name = event['name']
+    event_datetime = datetime.strptime(f"{event['date']} {event['time']}", '%Y-%m-%d %H:%M')
+    ics_event.begin = event_datetime
+    ics_event.end = event_datetime + timedelta(hours=1)  # Assume 1-hour duration
+    cal.events.add(ics_event)
     
     with open('event.ics', 'w') as f:
-        f.writelines(calendar.serialize_iter())
+        f.writelines(cal.serialize_iter())
+
+def get_google_calendar_credentials():
+    creds = None
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     
-    # Add to Google Calendar
-    service = get_google_calendar_service()
-    if service:
-        event = {
-            'summary': description,
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+        
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
+    
+    return creds
+
+def add_to_google_calendar(event):
+    try:
+        creds = get_google_calendar_credentials()
+        service = build('calendar', 'v3', credentials=creds)
+        
+        event_datetime = datetime.strptime(f"{event['date']} {event['time']}", '%Y-%m-%d %H:%M')
+        end_datetime = event_datetime + timedelta(hours=1)  # Assume 1-hour duration
+        
+        calendar_event = {
+            'summary': event['name'],
             'start': {
                 'dateTime': event_datetime.isoformat(),
                 'timeZone': 'UTC',
             },
             'end': {
-                'dateTime': (event_datetime + timedelta(hours=1)).isoformat(),
+                'dateTime': end_datetime.isoformat(),
                 'timeZone': 'UTC',
             },
         }
-        try:
-            service.events().insert(calendarId='primary', body=event).execute()
-        except HttpError as error:
-            print(f"An error occurred: {error}")
+        
+        event = service.events().insert(calendarId='primary', body=calendar_event).execute()
+        print(f"Event added to Google Calendar: {event.get('htmlLink')}")
+    except HttpError as error:
+        print(f"Error adding event to Google Calendar: {error}")
 
-def get_events_for_month(year, month):
-    # Replace this with actual database logic to retrieve user-added events
-    # Placeholder: return an empty list or fetch from your database
-    return []
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
