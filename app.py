@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, jsonify, session
+from flask import Flask, Request, render_template, request, redirect, url_for, jsonify, session
 from dotenv import load_dotenv
 import openai
 from datetime import datetime, timedelta
