@@ -22,8 +22,8 @@ app.secret_key = os.urandom(24)
 
 # Simulated user database (replace with a real database in production)
 users = {
-    "user1": "password1",
-    "user2": "password2"
+    "user1": "1234",
+    "user2": "1234"
 }
 
 # Simulated events storage (replace with a real database in production)
