@@ -1,25 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MayDay - Login</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100 h-screen flex items-center justify-center">
-    <div class="bg-white p-8 rounded-lg shadow-md w-96">
-        <h1 class="text-2xl font-bold mb-6 text-center">MayDay</h1>
-        <form action="/login" method="POST">
-            <div class="mb-4">
-                <label for="username" class="block text-gray-700 text-sm font-bold mb-2">Username</label>
-                <input type="text" id="username" name="username" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500" required>
+import React from 'react'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
+export default function Login() {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-orange-100 to-orange-200">
+      <Card className="w-full max-w-md bg-white shadow-xl rounded-xl">
+        <CardHeader className="text-center">
+          <CardTitle className="text-4xl font-bold text-orange-500">MayDay</CardTitle>
+          <p className="text-gray-600">Your AI-powered scheduling assistant</p>
+        </CardHeader>
+        <CardContent>
+          <form action="/login" method="post" className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-medium text-gray-700">Email</label>
+              <Input id="email" name="email" type="email" placeholder="you@example.com" required className="w-full" />
             </div>
-            <div class="mb-6">
-                <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
-                <input type="password" id="password" name="password" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500" required>
+            <div className="space-y-2">
+              <label htmlFor="password" className="text-sm font-medium text-gray-700">Password</label>
+              <Input id="password" name="password" type="password" placeholder="••••••••" required className="w-full" />
             </div>
-            <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300">Login</button>
-        </form>
+            <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white">
+              Log In
+            </Button>
+          </form>
+          <div className="mt-4 text-center">
+            <a href="/register" className="text-orange-500 hover:underline">
+              Create an account
+            </a>
+          </div>
+        </CardContent>
+      </Card>
     </div>
-</body>
-</html>
+  )
+}
