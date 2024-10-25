@@ -1,0 +1,87 @@
+import React, { useState } from 'react'
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { PlusCircle, Home, User, ChevronLeft, ChevronRight } from 'lucide-react'
+
+export default function Homepage({ events = [] }) {
+  const [currentDate, setCurrentDate] = useState(new Date())
+
+  const nextMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))
+  }
+
+  const prevMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))
+  }
+
+  return (
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-orange-100 to-orange-200">
+      <header className="bg-white shadow-md">
+        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-orange-500">MayDay</h1>
+          <nav className="flex space-x-4">
+            <Button variant="ghost" className="text-gray-600 hover:text-orange-500">
+              <Home className="w-5 h-5 mr-1" />
+              Home
+            </Button>
+            <Button variant="ghost" className="text-gray-600 hover:text-orange-500">
+              <User className="w-5 h-5 mr-1" />
+              Profile
+            </Button>
+          </nav>
+        </div>
+      </header>
+      <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Card className="bg-white shadow-xl rounded-xl overflow-hidden">
+          <CardHeader className="bg-orange-500 text-white p-4 flex justify-between items-center">
+            <Button onClick={prevMonth} variant="ghost" className="text-white">
+              <ChevronLeft className="w-6 h-6" />
+            </Button>
+            <CardTitle className="text-2xl font-bold">
+              {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
+            </CardTitle>
+            <Button onClick={nextMonth} variant="ghost" className="text-white">
+              <ChevronRight className="w-6 h-6" />
+            </Button>
+          </CardHeader>
+          <CardContent className="p-4">
+            <Calendar
+              mode="single"
+              selected={currentDate}
+              onSelect={(date) => setCurrentDate(date || new Date())}
+              className="rounded-md border-0"
+            />
+          </CardContent>
+        </Card>
+        <div className="mt-8 space-y-4">
+          <h2 className="text-2xl font-bold text-gray-800">Upcoming Events</h2>
+          {events && events.length > 0 ? (
+            events.map((event, index) => (
+              <Card key={index} className="bg-white shadow-md hover:shadow-lg transition-shadow duration-300">
+                <CardContent className="p-4">
+                  <h3 className="text-xl font-semibold text-gray-800">{event.title}</h3>
+                  <p className="text-gray-600">{new Date(event.start_time).toLocaleString()}</p>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <p className="text-center text-gray-600">No upcoming events. Time to plan something exciting!</p>
+          )}
+        </div>
+      </main>
+      <footer className="bg-white shadow-md mt-8">
+        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-center">
+            <Button asChild className="bg-orange-500 hover:bg-orange-600 text-white rounded-full shadow-lg">
+              <a href="/add_event">
+                <PlusCircle className="w-6 h-6 mr-2" />
+                Add Event
+              </a>
+            </Button>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}
