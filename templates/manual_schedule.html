@@ -1,0 +1,69 @@
+import React from 'react'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Calendar } from "@/components/ui/calendar"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { CalendarDays } from 'lucide-react'
+
+export default function ManualSchedule() {
+  return (
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-orange-100 to-orange-200">
+      <header className="bg-white shadow-md">
+        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl font-bold text-orange-500">MayDay</h1>
+        </div>
+      </header>
+      <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Card className="bg-white shadow-xl rounded-xl overflow-hidden">
+          <CardHeader className="bg-gray-800 text-white p-4">
+            <CardTitle className="text-2xl font-bold flex items-center">
+              <CalendarDays className="w-6 h-6 mr-2" />
+              Manual Scheduling
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <form action="/manual_schedule" method="post" className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="title" className="text-sm font-medium text-gray-700">Event Title</label>
+                <Input 
+                  id="title"
+                  name="title" 
+                  placeholder="Enter event title" 
+                  className="w-full p-2 border rounded"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Select Date</label>
+                <Calendar mode="single" className="rounded-md border" />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="start_time" className="text-sm font-medium text-gray-700">Start Time</label>
+                <Input 
+                  id="start_time"
+                  name="start_time" 
+                  type="datetime-local" 
+                  className="w-full p-2 border rounded"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="end_time" className="text-sm font-medium text-gray-700">End Time</label>
+                <Input 
+                  id="end_time"
+                  name="end_time" 
+                  type="datetime-local" 
+                  className="w-full p-2 border rounded"
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full bg-gray-800 hover:bg-gray-900 text-white py-2 rounded">
+                Add Event
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </main>
+    </div>
+  )
+}

@@ -1,0 +1,44 @@
+import React from 'react'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Brain } from 'lucide-react'
+
+export default function AISchedule() {
+  return (
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-orange-100 to-orange-200">
+      <header className="bg-white shadow-md">
+        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl font-bold text-orange-500">MayDay</h1>
+        </div>
+      </header>
+      <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Card className="bg-white shadow-xl rounded-xl overflow-hidden">
+          <CardHeader className="bg-orange-500 text-white p-4">
+            <CardTitle className="text-2xl font-bold flex items-center">
+              <Brain className="w-6 h-6 mr-2" />
+              AI Scheduling Assistant
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <form action="/ai_schedule" method="post" className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="description" className="text-sm font-medium text-gray-700">Event Description</label>
+                <Input 
+                  id="description"
+                  name="description" 
+                  placeholder="E.g., Doctor's appointment next week" 
+                  className="w-full p-2 border rounded"
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded">
+                Get AI Suggestion
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </main>
+    </div>
+  )
+}

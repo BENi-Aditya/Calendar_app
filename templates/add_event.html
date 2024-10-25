@@ -1,0 +1,40 @@
+import React from 'react'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Brain, Calendar } from 'lucide-react'
+
+export default function AddEvent() {
+  return (
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-orange-100 to-orange-200">
+      <header className="bg-white shadow-md">
+        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl font-bold text-orange-500">MayDay</h1>
+        </div>
+      </header>
+      <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Card className="bg-white shadow-xl rounded-xl overflow-hidden">
+          <CardHeader className="bg-orange-500 text-white p-4">
+            <CardTitle className="text-2xl font-bold">Add New Event</CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 space-y-6">
+            <Button asChild className="w-full py-6 text-lg bg-gradient-to-r from-orange-400 to-orange-600 hover:from-orange-500 hover:to-orange-700 text-white shadow-md">
+              <a href="/ai_schedule">
+                <Brain className="w-6 h-6 mr-2" />
+                AI Scheduling Assistant
+              </a>
+            </Button>
+            <Button asChild className="w-full py-6 text-lg bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white shadow-md">
+              <a href="/manual_schedule">
+                <Calendar className="w-6 h-6 mr-2" />
+                Manual Schedule
+              </a>
+            </Button>
+            <p className="text-center text-gray-600">
+              Choose AI for smart suggestions or Manual for full control over your schedule.
+            </p>
+          </CardContent>
+        </Card>
+      </main>
+    </div>
+  )
+}
