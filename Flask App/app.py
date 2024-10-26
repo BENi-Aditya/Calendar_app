@@ -7,9 +7,14 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
+import json
+
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.urandom(24)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mayday.db'
 db = SQLAlchemy(app)
 
@@ -18,7 +23,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Google Calendar API settings
 SCOPES = ['https://www.googleapis.com/auth/calendar']
-CLIENT_SECRETS_FILE = "client_secret.json"
+CLIENT_CONFIG = json.loads(os.getenv("GOOGLE_CLIENT_CONFIG"))
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -80,6 +85,18 @@ def add_event():
         new_event = Event(user_id=session['user_id'], title=title, start_time=start_time, end_time=end_time)
         db.session.add(new_event)
         db.session.commit()
+        
+        # Add event to Google Calendar
+        if 'credentials' in session:
+            credentials = Credentials(**session['credentials'])
+            service = build('calendar', 'v3', credentials=credentials)
+            event = {
+                'summary': title,
+                'start': {'dateTime': start_time.isoformat(), 'timeZone': 'UTC'},
+                'end': {'dateTime': end_time.isoformat(), 'timeZone': 'UTC'},
+            }
+            service.events().insert(calendarId='primary', body=event).execute()
+        
         return redirect(url_for('homepage'))
     return render_template('add_event.html')
 
@@ -117,8 +134,9 @@ def manual_schedule():
 
 @app.route('/authorize')
 def authorize():
-    flow = Flow.from_client_secrets_file(
-        CLIENT_SECRETS_FILE, scopes=SCOPES)
+    flow = Flow.from_client_config(
+        client_config=CLIENT_CONFIG,
+        scopes=SCOPES)
     flow.redirect_uri = url_for('oauth2callback', _external=True)
     authorization_url, state = flow.authorization_url(
         access_type='offline',
@@ -129,8 +147,10 @@ def authorize():
 @app.route('/oauth2callback')
 def oauth2callback():
     state = session['state']
-    flow = Flow.from_client_secrets_file(
-        CLIENT_SECRETS_FILE, scopes=SCOPES, state=state)
+    flow = Flow.from_client_config(
+        client_config=CLIENT_CONFIG,
+        scopes=SCOPES,
+        state=state)
     flow.redirect_uri = url_for('oauth2callback', _external=True)
     authorization_response = request.url
     flow.fetch_token(authorization_response=authorization_response)
