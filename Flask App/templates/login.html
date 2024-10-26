@@ -1,37 +1,37 @@
-import React from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-
-export default function Login() {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-orange-100 to-orange-200">
-      <Card className="w-full max-w-md bg-white shadow-xl rounded-xl">
-        <CardHeader className="text-center">
-          <CardTitle className="text-4xl font-bold text-orange-500">MayDay</CardTitle>
-          <p className="text-gray-600">Your AI-powered scheduling assistant</p>
-        </CardHeader>
-        <CardContent>
-          <form action="/login" method="post" className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-gray-700">Email</label>
-              <Input id="email" name="email" type="email" placeholder="you@example.com" required className="w-full" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MayDay - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-b from-orange-100 to-orange-200 min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-md">
+        <div class="bg-white shadow-xl rounded-xl p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-orange-500">MayDay</h1>
+                <p class="text-gray-600">Your AI-powered scheduling assistant</p>
             </div>
-            <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium text-gray-700">Password</label>
-              <Input id="password" name="password" type="password" placeholder="••••••••" required className="w-full" />
+            <form action="{{ url_for('login') }}" method="post" class="space-y-4">
+                <div class="space-y-2">
+                    <label for="email" class="text-sm font-medium text-gray-700">Email</label>
+                    <input id="email" name="email" type="email" placeholder="you@example.com" required class="w-full p-2 border rounded">
+                </div>
+                <div class="space-y-2">
+                    <label for="password" class="text-sm font-medium text-gray-700">Password</label>
+                    <input id="password" name="password" type="password" placeholder="••••••••" required class="w-full p-2 border rounded">
+                </div>
+                <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded">
+                    Log In
+                </button>
+            </form>
+            <div class="mt-4 text-center">
+                <a href="{{ url_for('register') }}" class="text-orange-500 hover:underline">
+                    Create an account
+                </a>
             </div>
-            <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white">
-              Log In
-            </Button>
-          </form>
-          <div className="mt-4 text-center">
-            <a href="/register" className="text-orange-500 hover:underline">
-              Create an account
-            </a>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
     </div>
-  )
-}
+</body>
+</html>
