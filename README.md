@@ -1,8 +1,5 @@
 
-
-
  <!-- README.md -->
-
 
 <h1 align="center" style="color: #4CAF50;">MayDay - Smart Calendar App</h1>
 </p>
